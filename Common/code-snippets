@@ -1,0 +1,76 @@
+import csv
+import os
+
+print("Muhammad")
+
+imageFolderName = 'IMG_fog_only'
+features_directory = '../data/'
+labels_file = '../data/driving_log_fog_only.csv'
+labels_file_foggy = '../data/driving_log_foggy.csv'
+labels_file_to_trim = '../data/driving_log_foggy_trimmed.csv'
+NoColumns = 3  # steering value index in csv
+
+def processLine(line, replacement):
+    newLine = []
+    if replacement == "IMG_fog_only/":
+        line = line[:3]
+    for i in line:
+        newLine.append(i.replace(replacement, ''))
+    return newLine
+
+
+def trim_foggy_csv():
+    logs = []
+    features = []
+    with open(labels_file, 'rt') as file:
+        reader = csv.reader(file)
+        for fogOnlyLine in reader:
+            fogOnlyLine = processLine(fogOnlyLine, "IMG_fog_only/")
+            logs.append(fogOnlyLine)
+        log_labels = logs.pop(0)  # remove headers of csv file..
+        logs = [item for sublist in logs for item in sublist]
+
+        with open(labels_file_to_trim, 'w', newline='') as file_to_trim, open(labels_file_foggy, 'r') as lff:
+            writer = csv.writer(file_to_trim)
+            for foggyLine in csv.reader(lff):
+                foggyLine = processLine(foggyLine, "IMG_foggy/")
+                imageFound = False
+                for cell in foggyLine:
+                    if cell in logs:
+                        imageFound = True
+                        break
+                if not imageFound:
+                    writer.writerow(foggyLine)
+
+def data_loading():
+    logs = []
+    features = []
+    with open(labels_file, 'rt') as f:
+        reader = csv.reader(f)
+        for line in reader:
+            line = processLine(line, "IMG_fog_only/")
+            logs.append(line)
+        log_labels = logs.pop(0)  # remove headers of csv file..
+        logs = [item for sublist in logs for item in sublist]
+    inputFolderPath = os.path.join(features_directory, imageFolderName)
+    for file in os.listdir(inputFolderPath):
+        fileInFolder = os.path.join(inputFolderPath, file)
+        if file not in logs:
+            os.remove(fileInFolder)
+
+data_loading()
+# trim_foggy_csv()
+
+def test_upper(self):
+    self.assertEqual('foo'.upper(), 'FOO')
+
+def test_isupper(self):
+    self.assertTrue('FOO'.isupper())
+    self.assertFalse('Foo'.isupper())
+
+def test_split(self):
+    s = 'hello world'
+    self.assertEqual(s.split(), ['hello', 'world'])
+    # check that s.split fails when the separator is not a string
+    with self.assertRaises(TypeError):
+        s.split(2)

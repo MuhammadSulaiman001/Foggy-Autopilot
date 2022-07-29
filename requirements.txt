@@ -1,0 +1,9 @@
+# being without specific version name: the worning will show up, try run the code at
+# I have disabled the inspection for this project
+cv2
+scikit-learn~=1.0
+matplotlib~=3.3.4
+tensorflow~=2.5.0
+numpy~=1.19.5
+scipy
+h5py
